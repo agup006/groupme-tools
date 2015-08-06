@@ -10,6 +10,7 @@ def printTranscript(messages):
     """Prints a readable "transcript" from the given list of messages.
 
     Assumes the input list is sorted."""
+    f = open('out3.json', 'w')
 
     for message in messages:
         name = message[u'name']
@@ -22,24 +23,28 @@ def printTranscript(messages):
         else:
             text = "(no text)"
 
-        if message[u'system'] is True:
+        # System Message indicating user changing username
+	if message[u'system'] is True:
             system_padded = '(SYS) '
         else:
             system_padded = ''
 
+	# Get number of Likes from message
         if len(message[u'favorited_by']) is not 0:
-            favorites_padded = ' (' + str(len(message[u'favorited_by'])) + 'x <3)'
+            favorites_padded = str(len(message[u'favorited_by'])) 
         else:
-            favorites_padded = ''
+            favorites_padded = '0'
 
+	# Give URL for picture if needed
         if message[u'picture_url'] is not None:
             pic = ' ; photo URL ' + message[u'picture_url']
         else:
             pic = ''
 
-        string = system_padded + name + ' (' + time + ')' + favorites_padded + ': ' + text + pic
-        print(string.encode(sys.stdout.encoding, errors='replace'))
 
+	string = json.dumps({'timestamp': time, 'message': system_padded + text, 'likes':favorites_padded, 'picurl': pic})
+#        string = system_padded + name + ' (' + time + ')' + favorites_padded + ': ' + text + pic
+	print >> f, string.encode(sys.stdout.encoding)
 
 def main():
     """Usage: simple-transcript.py filename.json
